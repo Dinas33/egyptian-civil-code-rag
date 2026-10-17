@@ -138,10 +138,10 @@ An initial, limited evaluation produced the following results:
 
 | Metric | Initial Result |
 |---|---:|
-| Faithfulness | 0.500 |
-| Answer Relevancy | 0.577 |
-| Context Precision | 1.000 |
-| Context Recall | 1.000 |
+| Faithfulness | |
+| Answer Relevancy | |
+| Context Precision ||
+| Context Recall | |
 
 These values are preliminary results from a limited evaluation run, not a comprehensive benchmark of the system.
 

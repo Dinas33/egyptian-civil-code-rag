@@ -1,3 +1,4 @@
+
 import faiss
 import numpy as np
 from sentence_transformers import SentenceTransformer
@@ -10,6 +11,12 @@ def retrieve_articles(
     chunks: list[dict],
     top_k: int,
 ) -> list[dict]:
+    if index.ntotal != len(chunks):
+        raise ValueError(
+            f"FAISS index contains {index.ntotal} vectors, "
+            f"but the chunk collection contains {len(chunks)} items."
+        )
+
     query_embedding = model.encode(
         [question],
         normalize_embeddings=True,
@@ -20,14 +27,14 @@ def retrieve_articles(
         dtype="float32",
     )
 
-    scores, indices = index.search(
-        query_embedding,
-        top_k,
-    )
+    scores, indices = index.search(query_embedding, top_k)
 
     results = []
 
     for score, idx in zip(scores[0], indices[0]):
+        if idx < 0 or idx >= len(chunks):
+            continue
+
         chunk = chunks[idx]
 
         results.append(

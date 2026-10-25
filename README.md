@@ -229,71 +229,81 @@ A GPU is not required by the basic local workflow, but hardware limitations can 
 ### 1. Clone the repository
 
 Replace the placeholder with your actual GitHub repository URL.
+## Installation
+
+### Prerequisites
+
+- Python 3.13
+- [uv](https://docs.astral.sh/uv/)
+- [Git](https://git-scm.com/)
+- [Ollama](https://ollama.com/)
+- Internet access for downloading model files
+- Authorized access to the configured DVC remote, unless all required artifacts are already available locally
+
+The basic workflow supports CPU execution. A GPU is not required, although local inference and embedding initialization may be slower on CPU.
+
+### 1. Clone the repository
 
 ```bash
-git clone <YOUR_REPOSITORY_URL>
+git clone https://github.com/Dinas33/egyptian-civil-code-rag.git
 cd egyptian-civil-code-rag
 ```
 
 ### 2. Install dependencies
 
 ```bash
-uv sync --locked
+uv sync --locked --extra dvc
 ```
 
 ### 3. Download the local language model
 
-Ensure Ollama is running, then pull the configured model:
+Ensure Ollama is installed and running, then execute:
 
 ```bash
 ollama pull qwen2.5:3b
 ```
 
-### 4. Retrieve DVC artifacts if required
+### 4. Download the embedding model
 
-If the required artifacts are stored remotely and you have valid access credentials, run:
+The project uses `BAAI/bge-m3` through SentenceTransformers.
+
+The model is downloaded automatically when the embedding component initializes if it is not already cached locally. Internet access is required for the initial download.
+
+### 5. Retrieve DVC artifacts
+
+The project stores its DVC artifacts on an S3-compatible IDrive e2 remote.
+
+Configure valid access credentials in the execution environment, then run:
 
 ```bash
-uv run dvc pull
+uv run --extra dvc dvc pull
 ```
 
-If the required files are already present locally, this step may not be necessary.
+The remote requires authorized credentials. Do not commit access keys, secret keys, or `.env` files to Git.
 
 ## Running the API
 
-Start the FastAPI application using the module path configured in the repository.
-
-For example, if `rag.api:app` is the correct import path:
+From the repository root, start the FastAPI application:
 
 ```bash
-uv run uvicorn rag.api:app --reload
+uv run uvicorn rag.api:app --app-dir src --host 127.0.0.1 --port 8000
 ```
 
-Verify the actual application import path before running this command.
+Keep the server terminal open.
 
-Once the API is running, use the endpoints implemented by the application to check its health and submit questions. The available routes and request schema should be confirmed from the current API implementation.
-
-## Testing and Code Quality
-
-### Run tests
+Check the health endpoint:
 
 ```bash
-uv run pytest
+curl http://127.0.0.1:8000/health
 ```
 
-### Run Ruff
+Open the interactive API documentation:
 
-```bash
-uv run ruff check .
-```
+http://127.0.0.1:8000/docs
 
-### Reproduce the DVC pipeline
+Use `POST /ask` to submit a question and inspect the generated answer and retrieved sources.
 
-```bash
-uv run dvc repro
-```
-
-These commands validate the tests, code-quality rules, and reproducibility workflow configured in the repository. The CI/CD pipeline should run the corresponding checks defined in its workflow configuration.
+Press `Ctrl+C` in the server terminal to stop the application.
 
 ## Reproducibility
 

@@ -345,11 +345,7 @@ The project is progressing from a locally implemented and instrumented RAG pipel
 - Access to remote DVC artifacts depends on the availability of correctly configured credentials.
 - Containerized deployment readiness depends on successful BentoML packaging and Docker runtime validation.
 
-## Disclaimer
 
-This project is intended for educational and research purposes. It does not replace professional legal advice.
-
-Always verify generated answers against the official legal text and consult a qualified Egyptian lawyer when making legal decisions.
 
 ## Author
 
